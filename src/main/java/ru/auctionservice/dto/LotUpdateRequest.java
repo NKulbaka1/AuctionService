@@ -1,5 +1,6 @@
 package ru.auctionservice.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Schema(description = "Request to update a lot. Only the provided fields will be changed.")
 public class LotUpdateRequest {
 
     private String title;

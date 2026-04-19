@@ -41,11 +41,11 @@ public class LotService {
     }
 
     @Transactional(readOnly = true)
-    public Page<LotShortResponse> getLots(LotStatus status, Pageable pageable) {
+    public PageResponse<LotShortResponse> getLots(LotStatus status, Pageable pageable) {
         Page<Lot> lots = (status != null)
                 ? lotRepository.findAllByStatus(status, pageable)
                 : lotRepository.findAll(pageable);
-        return lots.map(this::toShortResponse);
+        return new PageResponse<>(lots.map(this::toShortResponse));
     }
 
     @Transactional
