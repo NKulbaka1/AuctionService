@@ -3,9 +3,9 @@ spring:
     name: auctionservice
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/auctiondb
-    username: auction_user
-    password: auction_pass
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:auctiondb}
+    username: ${DB_USER:auction_user}
+    password: ${DB_PASSWORD:auction_pass}
     driver-class-name: org.postgresql.Driver
 
   jpa:
