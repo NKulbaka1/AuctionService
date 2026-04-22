@@ -16,7 +16,6 @@ public class SwaggerConfig {
                         .title("Auction Service API")
                         .description("REST API for managing lots and bids in an online auction")
                         .version("1.0")
-                        .contact(new Contact()
-                                .name("Auction Service Team")));
+        );
     }
 }
