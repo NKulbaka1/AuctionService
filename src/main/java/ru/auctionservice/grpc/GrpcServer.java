@@ -22,6 +22,7 @@ public class GrpcServer implements SmartLifecycle {
 
     private final LotGrpcServiceImpl lotGrpcService;
     private final BidGrpcServiceImpl bidGrpcService;
+    private final SubscriptionGrpcServiceImpl subscriptionGrpcService;
 
     private Server server;
     private volatile boolean running = false;
@@ -32,6 +33,7 @@ public class GrpcServer implements SmartLifecycle {
             server = ServerBuilder.forPort(port)
                     .addService(lotGrpcService)
                     .addService(bidGrpcService)
+                    .addService(subscriptionGrpcService)
                     .addService(ProtoReflectionServiceV1.newInstance())
                     .build()
                     .start();

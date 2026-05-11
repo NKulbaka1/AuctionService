@@ -1,6 +1,7 @@
 package ru.auctionservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,10 +13,15 @@ import ru.auctionservice.exception.LotNotFoundException;
 import ru.auctionservice.repository.LotRepository;
 
 @Service
-@RequiredArgsConstructor
 public class LotService {
 
     private final LotRepository lotRepository;
+    private final SubscriptionService subscriptionService;
+
+    public LotService(LotRepository lotRepository, @Lazy SubscriptionService subscriptionService) {
+        this.lotRepository = lotRepository;
+        this.subscriptionService = subscriptionService;
+    }
 
     @Transactional
     public LotFullResponse createLot(LotCreateRequest request) {
@@ -31,6 +37,7 @@ public class LotService {
                 .build();
 
         Lot saved = lotRepository.save(lot);
+        subscriptionService.autoSubscribeSeller(saved.getSellerId(), saved.getId());
         return toFullResponse(saved);
     }
 

@@ -128,3 +128,35 @@ service BidGrpcService {
   rpc PlaceBid        (PlaceBidRequest)       returns (BidProto);
   rpc GetCurrentPrice  (GetCurrentPriceRequest) returns (CurrentPriceProto);
 }
+
+// ─── Subscription Messages ────────────────────────────────────────────────────
+
+message GetSubscribedLotsRequest {
+  int64 user_id = 1;
+}
+
+message GetSubscribedLotsResponse {
+  repeated LotShort lots = 1;
+}
+
+message SubscribeRequest {
+  int64 user_id = 1;
+  int64 lot_id  = 2;
+}
+
+message SubscribeResponse {}
+
+message UnsubscribeRequest {
+  int64 user_id = 1;
+  int64 lot_id  = 2;
+}
+
+message UnsubscribeResponse {}
+
+// ─── Subscription Service ─────────────────────────────────────────────────────
+
+service SubscriptionGrpcService {
+  rpc GetSubscribedLots (GetSubscribedLotsRequest) returns (GetSubscribedLotsResponse);
+  rpc Subscribe         (SubscribeRequest)         returns (SubscribeResponse);
+  rpc Unsubscribe       (UnsubscribeRequest)        returns (UnsubscribeResponse);
+}
