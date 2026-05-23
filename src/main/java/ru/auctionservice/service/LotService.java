@@ -1,7 +1,6 @@
 package ru.auctionservice.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,32 +12,15 @@ import ru.auctionservice.exception.LotNotFoundException;
 import ru.auctionservice.repository.LotRepository;
 
 @Service
+@RequiredArgsConstructor
 public class LotService {
 
     private final LotRepository lotRepository;
-    private final SubscriptionService subscriptionService;
+    private final LotWriteBuffer lotWriteBuffer;
 
-    public LotService(LotRepository lotRepository, @Lazy SubscriptionService subscriptionService) {
-        this.lotRepository = lotRepository;
-        this.subscriptionService = subscriptionService;
-    }
-
-    @Transactional
     public LotFullResponse createLot(LotCreateRequest request) {
-        Lot lot = Lot.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .startingPrice(request.getStartingPrice())
-                .currentPrice(request.getStartingPrice())
-                .status(request.getStatus() != null ? request.getStatus() : LotStatus.DRAFT)
-                .imageUrl(request.getImageUrl())
-                .sellerId(request.getSellerId())
-                .endsAt(request.getEndsAt())
-                .build();
-
-        Lot saved = lotRepository.save(lot);
-        subscriptionService.autoSubscribeSeller(saved.getSellerId(), saved.getId());
-        return toFullResponse(saved);
+        Long id = lotWriteBuffer.enqueue(request);
+        return getLotById(id);
     }
 
     @Transactional(readOnly = true)

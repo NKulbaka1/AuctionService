@@ -7,6 +7,10 @@ spring:
     username: ${DB_USER:auction_user}
     password: ${DB_PASSWORD:auction_pass}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 3000
 
   jpa:
     hibernate:
