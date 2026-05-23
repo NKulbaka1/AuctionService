@@ -27,7 +27,7 @@ public class BidService {
 
     @Transactional
     public BidResponse placeBid(Long lotId, BidRequest request) {
-        Lot lot = lotService.findById(lotId);
+        Lot lot = lotService.findByIdForUpdate(lotId); // SELECT FOR UPDATE — исключает гонку ставок
 
         if (lot.getStatus() != LotStatus.ACTIVE) {
             throw new LotNotActiveException(lotId);

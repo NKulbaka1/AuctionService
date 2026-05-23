@@ -95,6 +95,11 @@ public class LotService {
                 .orElseThrow(() -> new LotNotFoundException(id));
     }
 
+    public Lot findByIdForUpdate(Long id) {
+        return lotRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new LotNotFoundException(id));
+    }
+
     private LotFullResponse toFullResponse(Lot lot) {
         return LotFullResponse.builder()
                 .id(lot.getId())
