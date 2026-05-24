@@ -14,6 +14,7 @@ import ru.auctionservice.exception.LotNotActiveException;
 import ru.auctionservice.kafka.BidEventPublisher;
 import ru.auctionservice.kafka.BidPlacedEvent;
 import ru.auctionservice.repository.BidRepository;
+import ru.auctionservice.repository.LotRepository;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -22,25 +23,26 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class BidService {
 
     private final BidRepository bidRepository;
+    private final LotRepository lotRepository;
     private final LotService lotService;
     private final BidEventPublisher bidEventPublisher;
 
     @Transactional
     public BidResponse placeBid(Long lotId, BidRequest request) {
-        Lot lot = lotService.findByIdForUpdate(lotId); // SELECT FOR UPDATE — исключает гонку ставок
+        int updated = lotRepository.updateCurrentPriceIfHigher(lotId, request.getAmount());
 
-        if (lot.getStatus() != LotStatus.ACTIVE) {
-            throw new LotNotActiveException(lotId);
-        }
-
-        if (request.getAmount().compareTo(lot.getCurrentPrice()) <= 0) {
+        if (updated == 0) {
+            Lot lot = lotService.findById(lotId);
+            if (lot.getStatus() != LotStatus.ACTIVE) {
+                throw new LotNotActiveException(lotId);
+            }
             throw new BidTooLowException(
-                    "Bid amount " + request.getAmount() + " must be greater than current price " + lot.getCurrentPrice()
+                    "Bid amount " + request.getAmount() +
+                    " must be greater than current price " + lot.getCurrentPrice()
             );
         }
 
-        lot.setCurrentPrice(request.getAmount());
-
+        Lot lot = lotService.findById(lotId);
         Bid bid = Bid.builder()
                 .lot(lot)
                 .bidderId(request.getBidderId())
@@ -54,7 +56,7 @@ public class BidService {
                 .lotId(lotId)
                 .bidderId(saved.getBidderId())
                 .amount(saved.getAmount())
-                .newCurrentPrice(lot.getCurrentPrice())
+                .newCurrentPrice(request.getAmount())
                 .placedAt(saved.getCreatedAt())
                 .build();
 
