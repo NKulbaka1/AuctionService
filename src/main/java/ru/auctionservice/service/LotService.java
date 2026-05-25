@@ -30,10 +30,17 @@ public class LotService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<LotShortResponse> getLots(LotStatus status, Pageable pageable) {
-        Page<Lot> lots = (status != null)
-                ? lotRepository.findAllByStatus(status, pageable)
-                : lotRepository.findAll(pageable);
+    public PageResponse<LotShortResponse> getLots(LotStatus status, Long sellerId, Pageable pageable) {
+        Page<Lot> lots;
+        if (status != null && sellerId != null) {
+            lots = lotRepository.findAllByStatusAndSellerId(status, sellerId, pageable);
+        } else if (status != null) {
+            lots = lotRepository.findAllByStatus(status, pageable);
+        } else if (sellerId != null) {
+            lots = lotRepository.findAllBySellerId(sellerId, pageable);
+        } else {
+            lots = lotRepository.findAll(pageable);
+        }
         return new PageResponse<>(lots.map(this::toShortResponse));
     }
 

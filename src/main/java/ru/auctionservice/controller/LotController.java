@@ -64,7 +64,7 @@ public class LotController {
             @Parameter(description = "Filter by lot status (DRAFT, ACTIVE, CLOSED)")
             @RequestParam(required = false) LotStatus status,
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
-        return ResponseEntity.ok(lotService.getLots(status, pageable));
+        return ResponseEntity.ok(lotService.getLots(status, null, pageable));
     }
 
     @Operation(summary = "Update a lot", description = "Partially updates a lot (only provided fields are changed).")

@@ -15,6 +15,10 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
 
     Page<Lot> findAllByStatus(LotStatus status, Pageable pageable);
 
+    Page<Lot> findAllBySellerId(Long sellerId, Pageable pageable);
+
+    Page<Lot> findAllByStatusAndSellerId(LotStatus status, Long sellerId, Pageable pageable);
+
     @Modifying
     @Query("UPDATE Lot l SET l.currentPrice = :price " +
            "WHERE l.id = :id " +

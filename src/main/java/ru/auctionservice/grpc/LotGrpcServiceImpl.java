@@ -74,8 +74,9 @@ public class LotGrpcServiceImpl extends LotGrpcServiceGrpc.LotGrpcServiceImplBas
 
             ru.auctionservice.entity.LotStatus status =
                     request.getFilterByStatus() ? mapStatusToEntity(request.getStatus()) : null;
+            Long sellerId = request.getFilterBySeller() ? request.getSellerId() : null;
 
-            PageResponse<LotShortResponse> page = lotService.getLots(status, pageable);
+            PageResponse<LotShortResponse> page = lotService.getLots(status, sellerId, pageable);
 
             GetLotsResponse.Builder builder = GetLotsResponse.newBuilder()
                     .setPage(page.getPage())
